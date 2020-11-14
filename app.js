@@ -1,13 +1,18 @@
 const express = require('express');
 const fs = require('fs');
+const morgan = require('morgan');
 
 const app = express();
 app.use(express.json());
+
+// MIDDLEWARES
+app.use(morgan('dev'));
 
 const tours = JSON.parse(
   fs.readFileSync(`${__dirname}/dev-data/data/tours-simple.json`)
 );
 
+// ROUTE HANDLERS
 const getAllTours = (req, res) => {
   res.status(200).json({
     status: 'success',
@@ -39,7 +44,12 @@ const getTour = (req, res) => {
 
 const createTour = (req, res) => {
   const newId = tours[tours.length - 1].id + 1;
-  const newTour = Object.assign({ id: newId }, req.body);
+  const newTour = Object.assign(
+    {
+      id: newId,
+    },
+    req.body
+  );
 
   tours.push(newTour);
   fs.writeFile(
@@ -85,15 +95,58 @@ const deleteTour = (req, res) => {
   });
 };
 
-// Get all tours and create new tour and push it into tours-simple.json file
-app.route('/api/v1/tours').get(getAllTours).post(getTour);
-// Extracting one trip using the get method, Prototype patch and delete methods
-app
-  .route('/api/v1/tours/:id')
-  .get(getTour)
-  .patch(updateTour)
-  .delete(deleteTour);
+const getAllUsers = (req, res) => {
+  res.status(500).json({
+    status: 'error',
+    message: 'This route is not yet defined',
+  });
+};
 
+const createUser = (req, res) => {
+  res.status(500).json({
+    status: 'error',
+    message: 'This route is not yet defined',
+  });
+};
+
+const getUser = (req, res) => {
+  res.status(500).json({
+    status: 'error',
+    message: 'This route is not yet defined',
+  });
+};
+
+const updateUser = (req, res) => {
+  res.status(500).json({
+    status: 'error',
+    message: 'This route is not yet defined',
+  });
+};
+
+const deleteUser = (req, res) => {
+  res.status(500).json({
+    status: 'error',
+    message: 'This route is not yet defined',
+  });
+};
+
+// ROUTES
+const tourRouter = express.Router();
+const userRouter = express.Router();
+// Get all tours and create new tour and push it into tours-simple.json file
+tourRouter.route('/').get(getAllTours).post(createTour);
+// Extracting one trip using the get method, Prototype patch and delete methods
+tourRouter.route('/:id').get(getTour).patch(updateTour).delete(deleteTour);
+
+userRouter.route('/').get(getAllUsers).post(createUser);
+
+userRouter.route('/:id').get(getUser).patch(updateUser).delete(deleteUser);
+
+// Mount routes
+app.use('/api/v1/tours', tourRouter);
+app.use('/api/v1/users', userRouter);
+
+// START SERVER
 const port = 3000;
 app.listen(port, () => {
   console.log(`App runing on port ${port}`);
