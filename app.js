@@ -9,7 +9,9 @@ const app = express();
 app.use(express.json());
 
 // MIDDLEWARES
-app.use(morgan('dev'));
+if (process.env.NODE_ENV === 'development') {
+  app.use(morgan('dev'));
+}
 
 // MOUNT ROUTERS
 app.use('/api/v1/tours', tourRouter);
